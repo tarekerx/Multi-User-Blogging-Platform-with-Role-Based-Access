@@ -100,3 +100,18 @@ def profile():
     user = db.execute('SELECT * FROM authors WHERE id = ?', (g.user_id,)).fetchone()
 
     return render_template('users/user_profile.html', page_title="Profile", user=user)
+
+
+@auth_bp.route('/delete', methods=["GET",'POST'])
+def delete_user():
+    if g.user_id is None:
+        flash('You need to be logged in to delete your account.', 'error')
+        return redirect(url_for('auth.login'))
+
+    db = get_db()
+    db.execute('DELETE FROM authors WHERE id = ?', (g.user_id,))
+    db.commit()
+
+    session.clear()
+    flash('Your account has been deleted successfully.', 'success')
+    return redirect(url_for('blog.posts'))
