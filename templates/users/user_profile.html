@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div>
+    <form action="/auth/profile" method="post">
+
+        <label for="email">Name</label>
+        <input  name="name" id="email" value="{{ user.name }}" required>
+
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" value="{{ user.email }}" required>
+
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password">
+
+        <button type="submit">Update</button>
+    </form>
+</div>
+{% endblock %}

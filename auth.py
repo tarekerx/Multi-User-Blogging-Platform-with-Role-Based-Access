@@ -59,3 +59,44 @@ def logout():
     session.clear()
     flash('You have been logged out.', 'success')
     return redirect(url_for('blog.posts'))
+
+
+@auth_bp.route('/profile', methods=['GET', 'POST'])
+def profile():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        emails = get_db().execute('SELECT email FROM authors').fetchall()
+
+
+        
+        if email in [email['email'] for email in emails] and email != g.email:
+            flash('Email already exists!', 'error')
+            return redirect(url_for('auth.register'))
+        
+        if not name or not email:
+            flash('Name and email are required!', 'error')
+            return redirect(url_for('auth.profile'))
+
+        if password:
+            password = generate_password_hash(password)
+        else:
+            password = g.get('password', None)
+        
+        db = get_db()
+        db.execute('UPDATE authors SET name = ?, email = ?, password = ? WHERE id = ?', (name, email,password, g.user_id))
+        db.commit()
+
+        flash('Profile updated successfully!', 'success')
+        return redirect(url_for('auth.profile'))
+
+
+    if g.user_id is None:
+        flash('You need to be logged in to view your profile.', 'error')
+        redirect(url_for('auth.login'))
+
+    db = get_db()
+    user = db.execute('SELECT * FROM authors WHERE id = ?', (g.user_id,)).fetchone()
+
+    return render_template('users/user_profile.html', page_title="Profile", user=user)
