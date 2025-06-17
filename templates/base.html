@@ -1,41 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <a href="{{url_for('blog.posts')}}">Posts</a>
-    {% if g.user_id %}
-    <a href="{{url_for('blog.my_posts')}}">My posts</a>
-    <a href="{{url_for('auth.logout')}}">Logout</a>
-    <a href="{{url_for('blog.create_post')}}">Create post</a>
-    <a href="{{url_for('auth.profile')}}">Profile</a>
-    
-    {% else %}
-    
-    <a href="{{url_for('auth.register')}}">Register</a>
-    <a href="{{url_for('auth.login')}}">Login</a>
-    {% endif %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ page_title }}</title>
 
-    <h1>{{page_title}}</h1>
-    <br>
-</nav>
+  <!-- Link to external CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
+  <!-- Theme Toggle Script -->
+  <script>
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute("data-theme");
+      if (currentTheme === "dark") {
+        document.documentElement.setAttribute("data-theme", "light");
+        localStorage.setItem("theme", "light");
+      } else {
+        document.documentElement.setAttribute("data-theme", "dark");
+        localStorage.setItem("theme", "dark");
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = localStorage.getItem("theme") || "light";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    });
+  </script>
 </head>
 <body>
+
+  <header>
+<nav>
+  <a href="{{ url_for('blog.posts') }}" class="nav-link">Posts</a>
+
+  {% if g.user_id %}
+    <a href="{{ url_for('blog.my_posts') }}" class="nav-link">My Posts</a>
+    <a href="{{ url_for('auth.logout') }}" class="nav-link">Logout</a>
+    <a href="{{ url_for('blog.create_post') }}" class="nav-link">Create Post</a>
+    <a href="{{ url_for('auth.profile') }}" class="nav-link">Profile</a>
+    {% if not g.is_admin %}
+      <a href="{{ url_for('auth.be_admin') }}" class="nav-link">Become Admin</a>
+    {% endif %}
+  {% else %}
+    <a href="{{ url_for('auth.register') }}" class="nav-link">Register</a>
+    <a href="{{ url_for('auth.login') }}" class="nav-link">Login</a>
+  {% endif %}
+
+  <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+</nav>
+
+    <h1>{{ page_title }}</h1>
+  </header>
+
+  <main>
     {% block content %}
     {% endblock %}
+  </main>
 
-    <footer>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <ul class="flashes">
-      {% for category, message in messages %}
-        <li class="{{ category }}">{{ message }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-
-    </footer>
+  <footer>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    &copy; {{ current_year | default('2025') }}Tarek's posts app. All rights reserved.
+  </footer>
 </body>
 </html>

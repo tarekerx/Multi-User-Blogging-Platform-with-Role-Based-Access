@@ -1,19 +1,39 @@
 {% extends "base.html" %}
 
-
 {% block content %}
+<div class="post-detail">
+  <h2>Author: {{ post.author_name }}</h2>
+  <h2>{{ post.title }}</h2>
+  <p>{{ post.content }}</p>
 
+  {% if g.user_id == post.author_id or g.is_admin %}
+    <a href="{{ url_for('blog.edit_post', post_id=post.id) }}" class="btn-submit">Edit</a>
+  {% endif %}
+</div>
 
+<div class="comment-section">
+  <h2>Leave a Comment</h2>
+  <form action="{{ url_for('blog.post', post_id=post.id) }}" method="post">
+    <label for="content">Comment Content</label>
+    <input type="text" id="content" name="content" required />
+    <button type="submit" class="btn-submit">Submit Comment</button>
+  </form>
+</div>
 
-    <div class="post">
-        <h2>Author name: {{ post.author_name }}</h2>
-        <h2>Post's title: {{ post.title }}</h2>
-        <p>Posts's content: {{ post.content }}</p>
-        {% if g.user_id == author_id %}
-        <a href="{{ url_for('blog.edit_post', post_id=post.id) }}">Edit</a>
+<div class="comments-list">
+  <h2>Comments</h2>
+  {% if comments %}
+    {% for comment in comments %}
+      <div class="comment">
+        <h3>{{ comment.user_name }}</h3>
+        <p>{{ comment.content }}</p>
+        {% if comment.user_id == g.user_id or g.is_admin %}
+          <a href="{{ url_for('blog.delete_comment', comment_id=comment.id) }}" class="delete-link">Delete</a>
         {% endif %}
-    </div>
-
-
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No comments yet.</p>
+  {% endif %}
+</div>
 {% endblock %}
-

@@ -29,6 +29,8 @@ def load_logged_in_user():
         g.user_id = user_id
         g.user_name = session.get('user_name')
         g.email = session.get('email')
+        g.is_admin = session.get('is_admin')
+        print(g.is_admin)
     else:
         g.user_id = None
 

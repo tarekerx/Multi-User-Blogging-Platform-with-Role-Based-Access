@@ -1,22 +1,24 @@
 {% extends "base.html" %}
 
-
 {% block content %}
-<div>
-    <form action="/auth/profile" method="post">
+<div class="form-container">
+  <h2>Your Profile</h2>
+  <form action="{{ url_for('auth.profile') }}" method="post">
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" value="{{ user.name }}" required>
 
-        <label for="email">Name</label>
-        <input  name="name" id="email" value="{{ user.name }}" required>
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" value="{{ user.email }}" required>
 
-        <label for="email">Email</label>
-        <input type="email" name="email" id="email" value="{{ user.email }}" required>
+    <label for="password">New Password (optional)</label>
+    <input type="password" id="password" name="password">
 
-        <label for="password">Password</label>
-        <input type="password" name="password" id="password">
-
-        <button type="submit">Update</button>
-    </form>
+    <button type="submit" class="btn-submit">Update Profile</button>
+  </form>
 </div>
-<a href="{{ url_for('blog.my_posts', user_id=user.id) }}">View Posts</a>
-<a href="{{ url_for('auth.delete_user', user_id=user.id) }}">Delete account</a>
+
+<div class="profile-actions">
+  <a href="{{ url_for('blog.my_posts', user_id=user.id) }}" class="btn-action btn-secondary">View My Posts</a>
+  <a href="{{ url_for('auth.delete_user', user_id=user.id) }}" class="btn-action btn-danger">Delete Account</a>
+</div>
 {% endblock %}

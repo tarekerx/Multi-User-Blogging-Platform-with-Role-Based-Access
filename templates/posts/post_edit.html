@@ -1,13 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div>
-    <form action="{{url_for('blog.edit_post',post_id = post_id)}}" method = "post">
-        <label for="title">Title</label><input type="text" name="title" value="{{post.title}}"></label>
-        <label for="content">Content</label><input type="text" name="content" value="{{post.content}}"></label>
-        <button type="submit">Edit</button>
+<div class="form-container">
+  <h2>Edit Post</h2>
+  <form action="{{ url_for('blog.edit_post', post_id=post_id) }}" method="post">
+    <label for="title">Title</label>
+    <input type="text" id="title" name="title" value="{{ post.title }}" required />
 
-    </form>
+    <label for="content">Content</label>
+    <textarea name="content" id="content" rows="5" required>{{ post.content }}</textarea>
+
+    <button type="submit" class="btn-submit">Update Post</button>
+  </form>
 </div>
-
 {% endblock %}

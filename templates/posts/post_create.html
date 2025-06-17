@@ -1,13 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div>
-    <form action="/post/create" method = "post">
-        <label for="title">Title</label><input type="text" name="title"></label>
-        <label for="content">Content</label><input type="text" name="content"></label>
-        <button type="submit">Create</button>
+<div class="form-container">
+  <h2>Create New Post</h2>
+  <form action="{{ url_for('blog.create_post') }}" method="post">
+    <label for="title">Title</label>
+    <input type="text" id="title" name="title" required />
 
-    </form>
+    <label for="content">Content</label>
+    <textarea name="content" id="content" rows="5" required></textarea>
+
+    <button type="submit" class="btn-submit">Create Post</button>
+  </form>
 </div>
-
 {% endblock %}

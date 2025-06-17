@@ -9,6 +9,7 @@ from db import get_db
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
+        
 
         name = request.form.get('name')
         password = generate_password_hash(request.form.get('password'))
@@ -46,6 +47,7 @@ def login():
             session['id'] = user['id']
             session['user_name'] = user['name']
             session['email'] = user['email']
+            session['is_admin'] = user['is_admin']
             flash('Login successful!', 'success')
             return redirect(url_for('blog.posts'))
 
@@ -81,8 +83,6 @@ def profile():
 
         if password:
             password = generate_password_hash(password)
-        else:
-            password = g.get('password', None)
         
         db = get_db()
         db.execute('UPDATE authors SET name = ?, email = ?, password = ? WHERE id = ?', (name, email,password, g.user_id))
@@ -115,3 +115,24 @@ def delete_user():
     session.clear()
     flash('Your account has been deleted successfully.', 'success')
     return redirect(url_for('blog.posts'))
+
+
+@auth_bp.route('/be_admin', methods=['GET', 'POST'])
+def be_admin():
+    if g.user_id is None:
+        flash('You need to be logged in to be an admin.', 'error')
+        return redirect(url_for('auth.login'))
+    if g.is_admin == 1:
+        flash('You are already an admin!', 'error')
+        return redirect(url_for('blog.posts'))
+
+    if request.method == 'POST':
+
+        db = get_db()
+        db.execute('UPDATE authors SET is_admin = 1 WHERE id = ?', (g.user_id,))
+        session['is_admin'] = 1
+        db.commit()
+
+        flash('You are now an admin!', 'success')
+        return redirect(url_for('blog.posts'))
+    return render_template('users/be_admin.html', page_title="Become Admin")

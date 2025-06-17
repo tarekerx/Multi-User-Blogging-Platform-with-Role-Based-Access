@@ -1,18 +1,19 @@
 {% extends "base.html" %}
 
-
 {% block content %}
-
-
-{% if posts %}
-{% for post in posts %}
-    <div class="post">
-        <h2>{{ post.title }}</h2>
-        <a href="{{url_for('blog.post', post_id = post['id'])}}">Enter post</a>
-    {% endfor %}
-{% else %}
-    <h1>No posts available.</h1>
-{% endif %}
-
+<div class="posts-list">
+  <h2>All Posts</h2>
+  {% if posts %}
+    <div class="post-grid">
+      {% for post in posts %}
+        <div class="post-card">
+          <h3>{{ post.title }}</h3>
+          <a href="{{ url_for('blog.post', post_id=post.id) }}" class="btn-read">Read More</a>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No posts available.</p>
+  {% endif %}
+</div>
 {% endblock %}
-
