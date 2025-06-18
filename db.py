@@ -1,11 +1,15 @@
 # db.py
-import sqlite3
+import psycopg2
+from psycopg2.extras import RealDictCursor
 from flask import g
-
-DATABASE = "database.db"
 
 def get_db():
     if 'db' not in g:
-        g.db = sqlite3.connect(DATABASE)
-        g.db.row_factory = sqlite3.Row
+        g.db = psycopg2.connect(
+            dbname="blogdb",
+            user="postgres",
+            password="hopalover1",
+            host="localhost",
+            cursor_factory=RealDictCursor
+        )
     return g.db
