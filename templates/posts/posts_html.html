@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="form-container">
+<form action="{{url_for('blog.posts')}}" method="POST">
+<input type="text" id="query" name = "query" placeholder="Search posts...">
+<button type="submit" class="btn-submit">Search</button>
+</form>
+</div>
 <div class="posts-list">
   <h2>All Posts</h2>
   {% if posts %}

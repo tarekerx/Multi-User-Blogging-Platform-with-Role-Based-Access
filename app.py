@@ -1,25 +1,24 @@
+# app.py
 from flask import Flask, g, session
-# Removed sqlite3 import — no longer needed
-from auth import auth_bp
-from blog import blog_bp
-from db import get_db  # This should now connect to PostgreSQL
-
+from db import db, init_db
+import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "secretkey123"
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
+# Load DATABASE_URL
+db_uri = os.getenv("DATABASE_URL")
+app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize DB
+init_db(app)
 
 # Register Blueprints
+from auth import auth_bp
+from blog import blog_bp
 app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(blog_bp, url_prefix="/")
-
-
-@app.teardown_appcontext
-def close_db(exception):
-    db = g.pop('db', None)
-    if db is not None:
-        db.close()
-
 
 @app.before_request
 def load_logged_in_user():
@@ -29,7 +28,6 @@ def load_logged_in_user():
         g.user_name = session.get('user_name')
         g.email = session.get('email')
         g.is_admin = session.get('is_admin')
-        print(g.is_admin)
     else:
         g.user_id = None
 
