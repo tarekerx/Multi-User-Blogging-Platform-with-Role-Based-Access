@@ -1,8 +1,6 @@
 # db.py
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask
+from flask_migrate import Migrate
 
 db = SQLAlchemy()
-
-def init_db(app):
-    db.init_app(app)
+migrate = Migrate(db=db)  # Initialize without app for now
