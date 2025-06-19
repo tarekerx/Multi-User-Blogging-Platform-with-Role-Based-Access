@@ -3,6 +3,8 @@ from flask import Flask, g, session
 from db import db, init_db
 import os
 
+
+
 print("DATABASE_URL:", os.getenv("DATABASE_URL"))
 
 app = Flask(__name__)
@@ -15,6 +17,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize DB
 init_db(app)
+migrate = Migrate(app, db)
+@app.cli.command("init-db")
+def init_db():
+    """Create all database tables."""
+    from models import db
+    db.create_all()
+    print("✅ Tables created.")
 
 # Register Blueprints
 from auth import auth_bp
