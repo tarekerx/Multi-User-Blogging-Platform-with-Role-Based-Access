@@ -3,6 +3,8 @@ from flask import Flask, g, session
 from db import db, init_db
 import os
 
+print("DATABASE_URL:", os.getenv("DATABASE_URL"))
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
