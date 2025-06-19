@@ -17,7 +17,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize DB
 init_db(app)
-migrate = Migrate(app, db)
+
 @app.cli.command("init-db")
 def init_db():
     """Create all database tables."""
