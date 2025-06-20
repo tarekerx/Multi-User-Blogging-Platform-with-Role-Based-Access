@@ -8,7 +8,7 @@ class Author(db.Model):
     password = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     is_admin = db.Column(db.Integer, default=0)
-    posts = db.relationship('Post', backref='author', lazy=True)
+    post = db.relationship('Post', backref='author', lazy=True)
 
 
 class Post(db.Model):
