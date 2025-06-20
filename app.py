@@ -19,11 +19,6 @@ migrate.init_app(app)
 with app.app_context():
     from models import Post, Author, Comment  # Or just import models
 
-@app.cli.command("init-db")
-def init_db():
-    """Create all database tables."""
-    db.create_all()
-    print("✅ Tables created.")
 
 # Register Blueprints
 from auth import auth_bp
