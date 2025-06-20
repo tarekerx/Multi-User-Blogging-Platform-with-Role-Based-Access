@@ -1,3 +1,4 @@
+# models.py
 from db import db
 
 class Author(db.Model):

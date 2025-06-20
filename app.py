@@ -1,29 +1,41 @@
-from models import Author, Post, Comment
+# app.py
 from flask import Flask, g, session
-from db import db  # Import both db and migrate
+from db import db, migrate  # Make sure this imports both
 import os
-# At top of app.py
-
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "fallback_secret_key")
-db_uri = os.getenv("DATABASE_URL", "sqlite:///database.db")
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///database.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Initialize extensions
 db.init_app(app)
+migrate.init_app(app)
 
-# Initialize DB and Migrate with the app
-
+# Import models inside app context
 @app.cli.command("init-db")
 def init_db():
+    """Create all tables."""
     with app.app_context():
-        db.create_all()
-        print("✅ Tables created in app context")
-# Import models after initializing db
-with app.app_context():
-    from models import Post, Author, Comment  # Or just import models
+        try:
+            db.create_all()
+            print("✅ Tables created in app context")
+        except Exception as e:
+            print("❌ Error creating tables:", str(e))
 
+# Import models and blueprints after db setup
+with app.app_context():
+    try:
+        from models import Post, Author, Comment
+    except Exception as e:
+        print("❌ Error importing models:", str(e))
+
+    # Optional: Create tables here too
+    try:
+        db.create_all()
+        print("✅ Tables created at startup")
+    except Exception as e:
+        print("❌ Error creating tables at startup:", str(e))
 
 # Register Blueprints
 from auth import auth_bp
@@ -39,9 +51,9 @@ def db_test():
         return "✅ Connected to PostgreSQL, and table exists."
     except Exception as e:
         return f"❌ Error: {str(e)}"
+
 @app.before_request
 def load_logged_in_user():
-    
     user_id = session.get('id')
     if user_id:
         g.user_id = user_id
@@ -50,7 +62,6 @@ def load_logged_in_user():
         g.is_admin = session.get('is_admin')
     else:
         g.user_id = None
-
 
 if __name__ == '__main__':
     app.run(debug=True)
