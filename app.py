@@ -1,7 +1,9 @@
-# app.py
+from models import Author, Post, Comment
 from flask import Flask, g, session
 from db import db  # Import both db and migrate
 import os
+# At top of app.py
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "fallback_secret_key")
@@ -15,11 +17,9 @@ db.init_app(app)
 
 @app.cli.command("init-db")
 def init_db():
-    """Create all tables."""
     with app.app_context():
-        from models import Post, Author, Comment
         db.create_all()
-    print("✅ Tables created.")
+        print("✅ Tables created in app context")
 # Import models after initializing db
 with app.app_context():
     from models import Post, Author, Comment  # Or just import models
