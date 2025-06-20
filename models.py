@@ -8,14 +8,11 @@ class Author(db.Model):
     password = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     is_admin = db.Column(db.Integer, default=0)
-
     posts = db.relationship('Post', backref='author', lazy=True)
 
 
-# models.py
-
 class Post(db.Model):
-    __tablename__ = 'post'  # Or 'posts'
+    __tablename__ = 'post'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
