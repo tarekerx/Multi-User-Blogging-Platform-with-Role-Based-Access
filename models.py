@@ -2,6 +2,7 @@
 from db import db
 
 class Author(db.Model):
+    __tablename__ = 'author'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(200), nullable=False)
@@ -11,7 +12,10 @@ class Author(db.Model):
     posts = db.relationship('Post', backref='author', lazy=True)
 
 
+# models.py
+
 class Post(db.Model):
+    __tablename__ = 'post'  # Or 'posts'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
@@ -20,6 +24,7 @@ class Post(db.Model):
 
 
 class Comment(db.Model):
+    __tablename__ = 'comment'
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)

@@ -7,18 +7,17 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "fallback_secret_key")
 
 # Load DATABASE_URL
-db_uri = os.getenv("DATABASE_URL")
-if not db_uri:
-    raise ValueError("DATABASE_URL environment variable not set!")
-
+db_uri = os.getenv("DATABASE_URL", "sqlite:///database.db")
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Initialize DB and Migrate
+# Initialize DB and Migrate with the app
+db.init_app(app)
 migrate.init_app(app)
 
-# Import models before CLI commands or any queries
-from models import Post, Author, Comment  # Make sure these are defined in models.py
+# Import models after initializing db
+with app.app_context():
+    from models import Post, Author, Comment  # Or just import models
 
 @app.cli.command("init-db")
 def init_db():
