@@ -1,4 +1,5 @@
 #!/bin/bash
 #!/bin/bash
-flask db upgrade
+#!/bin/bash
+flask init-db
 gunicorn app:app

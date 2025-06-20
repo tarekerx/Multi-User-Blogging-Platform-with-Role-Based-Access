@@ -5,16 +5,21 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "fallback_secret_key")
-
-# Load DATABASE_URL
 db_uri = os.getenv("DATABASE_URL", "sqlite:///database.db")
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Initialize DB and Migrate with the app
 db.init_app(app)
 migrate.init_app(app)
+# Initialize DB and Migrate with the app
 
+@app.cli.command("init-db")
+def init_db():
+    """Create all tables."""
+    with app.app_context():
+        from models import Post, Author, Comment
+        db.create_all()
+    print("✅ Tables created.")
 # Import models after initializing db
 with app.app_context():
     from models import Post, Author, Comment  # Or just import models
