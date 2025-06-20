@@ -1,6 +1,6 @@
 # app.py
 from flask import Flask, g, session
-from db import db, migrate  # Import both db and migrate
+from db import db  # Import both db and migrate
 import os
 
 app = Flask(__name__)
@@ -10,7 +10,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
-migrate.init_app(app)
+
 # Initialize DB and Migrate with the app
 
 @app.cli.command("init-db")
