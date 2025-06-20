@@ -91,7 +91,7 @@ def edit_post(post_id):
         flash('Post updated successfully!', 'success')
         return redirect(url_for('blog.post', post_id=post_id))
 
-    return render_template('posts/post_edit.html', page_title="Edit Post", post=post)
+    return render_template('posts/post_edit.html', page_title="Edit Post", post=post,post_id=post_id)
 
 
 @blog_bp.route('/posts/my_posts')
