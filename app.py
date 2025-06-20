@@ -31,8 +31,17 @@ from blog import blog_bp
 app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(blog_bp, url_prefix="/")
 
+@app.route('/db-test')
+def db_test():
+    try:
+        from models import Post
+        Post.query.first()
+        return "✅ Connected to PostgreSQL, and table exists."
+    except Exception as e:
+        return f"❌ Error: {str(e)}"
 @app.before_request
 def load_logged_in_user():
+    
     user_id = session.get('id')
     if user_id:
         g.user_id = user_id
