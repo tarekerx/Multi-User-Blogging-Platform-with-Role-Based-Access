@@ -6,6 +6,13 @@
   <h2>{{ post.title }}</h2>
   <p>{{ post.content }}</p>
 
+  <!-- Like URL styled as a thumb -->
+  <a href="{{ url_for('blog.like_post', post_id=post.id) }}" class="like-thumb">
+    👍<br>{{ post.likes }}
+  </a>
+  <br>
+  <br>
+
   {% if g.user_id == post.author_id or g.is_admin %}
     <a href="{{ url_for('blog.edit_post', post_id=post.id) }}" class="btn-submit">Edit</a>
   {% endif %}
@@ -18,6 +25,7 @@
     <input type="text" id="content" name="content" required />
     <button type="submit" class="btn-submit">Submit Comment</button>
   </form>
+
 </div>
 
 <div class="comments-list">
@@ -27,6 +35,9 @@
       <div class="comment">
         <h3>{{ comment.user_name }}</h3>
         <p>{{ comment.content }}</p>
+            <a href="{{ url_for('blog.like_comment',comment_id=comment.id) }}" class="like-thumb">
+    👍<br>{{ comment.likes }}
+  </a>
         {% if comment.user_id == g.user_id or g.is_admin %}
           <a href="{{ url_for('blog.delete_comment', comment_id=comment.id) }}" class="delete-link">Delete</a>
         {% endif %}

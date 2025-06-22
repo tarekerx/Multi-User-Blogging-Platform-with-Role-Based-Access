@@ -10,7 +10,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize extensions
 db.init_app(app)
-migrate.init_app(app)
+migrate.init_app(app,db)
 
 # Import models inside app context
 @app.cli.command("init-db")

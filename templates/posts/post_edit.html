@@ -13,4 +13,10 @@
     <button type="submit" class="btn-submit">Update Post</button>
   </form>
 </div>
+<div class="form-container">
+    {% if g.user_id == post.author_id or g.is_admin %}
+    <a href="{{ url_for('blog.delete_post', post_id=post_id) }}" class="btn-action danger">Delete Post</a>
+    {% endif %}
+
+</div>
 {% endblock %}

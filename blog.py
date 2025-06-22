@@ -1,6 +1,6 @@
 # blog.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash, g
-from models import Post, Comment
+from models import Post, Comment,Author
 from sqlalchemy.exc import IntegrityError
 from db import db
 blog_bp = Blueprint('blog', __name__, template_folder='templates')
@@ -88,6 +88,7 @@ def edit_post(post_id):
         post.title = title
         post.content = content
         db.session.commit()
+        
         flash('Post updated successfully!', 'success')
         return redirect(url_for('blog.post', post_id=post_id))
 
@@ -120,3 +121,56 @@ def delete_comment(comment_id):
     db.session.commit()
     return redirect(url_for('blog.post', post_id=comment.post_id))
 
+@blog_bp.route('/post/delete/<int:post_id>')
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+
+    if g.user_id is None:
+        flash('You need to be logged in to delete posts.', 'error')
+        return redirect(url_for('auth.login'))
+
+    if g.user_id != post.author_id and not g.is_admin:
+        flash('This is not your post', 'error')
+        return redirect(url_for('blog.post', post_id=post_id))
+
+
+    db.session.delete(post)
+    db.session.commit()
+    print("we are here")
+    return redirect(url_for('blog.posts'))
+
+
+
+@blog_bp.route('/post/like/<int:post_id>')
+def like_post(post_id):
+    if not g.get('user_id'):
+        return redirect(url_for('auth.login'))  # Unauthorized
+
+    post = Post.query.get_or_404(post_id)
+    user = Author.query.get_or_404(g.user_id)
+
+    if user in post.liked_by:
+        return redirect(request.referrer or "/")
+
+    post.liked_by.append(user)
+    post.likes += 1
+    db.session.commit()
+
+    return redirect(request.referrer or '/')
+
+@blog_bp.route('/comment/like/<int:comment_id>')
+def like_comment(comment_id,):
+    if not g.get('user_id'):
+        return redirect(url_for('auth.login'))  # Unauthorized
+
+    comment = Comment.query.get_or_404(comment_id)
+    user = Author.query.get_or_404(g.user_id)
+
+    if user in comment.liked_by:
+        return redirect(request.referrer or "/")
+
+    comment.liked_by.append(user)
+    comment.likes += 1
+    db.session.commit()
+
+    return redirect(request.referrer or '/')
