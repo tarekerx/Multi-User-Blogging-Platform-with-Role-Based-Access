@@ -1,10 +1,60 @@
-# auth.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, g
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import Author
 from sqlalchemy.exc import IntegrityError
 from db   import db
+from authlib.integrations.flask_client import OAuth
+
+import os
+
 auth_bp = Blueprint('auth', __name__, template_folder='templates')
+oauth = OAuth()
+
+google = None
+
+def init_oauth(app):
+    global google
+    oauth.init_app(app)
+    google = oauth.register(
+        name='google',
+        client_id='432385044870-bpp5ogs7ar7e7u854d8nanimkcllmumo.apps.googleusercontent.com',
+        client_secret=os.getenv('GOOGLE_CLIENT_SECRET', 'your_default_client_secret'),
+server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    api_base_url='https://www.googleapis.com/oauth2/v2/',
+        client_kwargs={'scope': 'openid email profile'},
+    )
+
+
+@auth_bp.route('/login/google')
+def google_login():
+    redirect_uri = url_for('auth.google_callback', _external=True)
+    return google.authorize_redirect(redirect_uri)
+
+@auth_bp.route('/callback')
+def google_callback():
+    print("we are here")
+    token = google.authorize_access_token()
+    print("are we where?")
+    resp = google.get('userinfo')
+    user_info = resp.json()
+    email = user_info['email']
+    name = user_info['name']
+
+    # Check if user exists
+    user = Author.query.filter_by(email=email).first()
+    if not user:
+        # Create user if they don't exist
+        user = Author(name=name, email=email, password=generate_password_hash(os.urandom(16)))
+        db.session.add(user)
+        db.session.commit()
+
+    # Log the user in
+    session['id'] = user.id
+    session['user_name'] = user.name
+    session['email'] = user.email
+    session['is_admin'] = user.is_admin
+    flash('Logged in with Google!', 'success')
+    return redirect(url_for('blog.posts'))
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -14,9 +64,14 @@ def register():
         password = generate_password_hash(request.form.get('password'))
         email = request.form.get('email')
 
+        if (request.form.get('password') != request.form.get('confirm_password')):
+            flash('Passwords do not match!', 'error')
+            
+            return redirect(url_for('auth.register'))
         if not name or not password:
             flash('Name and password are required!', 'error')
             return redirect(url_for('auth.register'))
+
 
         try:
             new_user = Author(name=name, password=password, email=email)
@@ -34,6 +89,7 @@ def register():
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    print("BEFORE REDIRECT:", dict(session))
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')

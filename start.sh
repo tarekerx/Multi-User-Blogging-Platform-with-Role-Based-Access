@@ -1,9 +1,10 @@
 #!/bin/bash
 #!/bin/bash
 #!/bin/bash
-flask init-db
-echo "🔧 Running flask init-db..."
-flask init-db
+flask db init
+flask db migrate -m "Initial"
+flask db upgrade
+
 
 echo "🚀 Starting Gunicorn"
 gunicorn app:app

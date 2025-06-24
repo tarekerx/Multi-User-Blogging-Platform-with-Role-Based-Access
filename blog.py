@@ -1,7 +1,6 @@
 # blog.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash, g
 from models import Post, Comment,Author
-from sqlalchemy.exc import IntegrityError
 from db import db
 blog_bp = Blueprint('blog', __name__, template_folder='templates')
 
@@ -88,7 +87,7 @@ def edit_post(post_id):
         post.title = title
         post.content = content
         db.session.commit()
-        
+
         flash('Post updated successfully!', 'success')
         return redirect(url_for('blog.post', post_id=post_id))
 
