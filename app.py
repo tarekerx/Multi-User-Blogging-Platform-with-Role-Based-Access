@@ -16,30 +16,14 @@ db.init_app(app)
 migrate.init_app(app, db)
 init_oauth(app)
 
+from flask_migrate import upgrade
+
 def run_auto_migration():
-    migrations_path = os.path.join(os.path.dirname(__file__), 'migrations')
-    alembic_ini_path = os.path.join(migrations_path, 'alembic.ini')
-
-    if not os.path.exists(migrations_path) or not os.path.exists(alembic_ini_path):
-        print("❌ Alembic not initialized. Run this once:")
-        print("   flask db init && flask db migrate -m 'init' && flask db upgrade")
-        return
-
-    alembic_cfg = Config(alembic_ini_path)
-    alembic_cfg.set_main_option('script_location', migrations_path)
-
     try:
-        command.revision(alembic_cfg, autogenerate=True, message="Auto migration")
-        print("⚠️ Auto migration script created")
+        upgrade()
+        print("✅ Database schema upgraded to latest migration.")
     except Exception as e:
-        if "Target database is not up to date" not in str(e):
-            print("⚠️ Revision issue:", str(e))
-
-    try:
-        command.upgrade(alembic_cfg, 'head')
-        print("✅ Auto upgrade done")
-    except Exception as e:
-        print("❌ Upgrade failed:", str(e))
+        print(f"❌ Migration upgrade failed: {str(e)}")
 
 
 @app.cli.command("init-db")
