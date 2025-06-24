@@ -47,6 +47,7 @@ def init_db():
     """Manual: Create all tables."""
     with app.app_context():
         try:
+            run_auto_migration()
             db.create_all()
             print("✅ Tables created manually")
         except Exception as e:
