@@ -44,7 +44,7 @@ def google_callback():
     user = Author.query.filter_by(email=email).first()
     if not user:
         # Create user if they don't exist
-        user = Author(name=name, email=email, password=generate_password_hash(os.urandom(16)))
+        user = Author(name=name, email=email, password=generate_password_hash(os.urandom(16).hex()))
         db.session.add(user)
         db.session.commit()
 
