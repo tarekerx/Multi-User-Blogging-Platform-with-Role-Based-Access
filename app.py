@@ -18,12 +18,6 @@ init_oauth(app)
 
 from flask_migrate import upgrade
 
-def run_auto_migration():
-    try:
-        upgrade()
-        print("✅ Database schema upgraded to latest migration.")
-    except Exception as e:
-        print(f"❌ Migration upgrade failed: {str(e)}")
 
 
 @app.cli.command("init-db")
@@ -31,7 +25,6 @@ def init_db():
     """Manual: Create all tables."""
     with app.app_context():
         try:
-            run_auto_migration()
             db.create_all()
             print("✅ Tables created manually")
         except Exception as e:
@@ -42,7 +35,7 @@ def init_db():
 with app.app_context():
     try:
         from models import Post, Author, Comment  # Load models
-        run_auto_migration()
+ # Run auto-migration
     except Exception as e:
         print("❌ Error during model import or migration:", str(e))
 
